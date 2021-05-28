@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using BulkyBook.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,9 @@ namespace BulkyBook.DatAccess.Data
             : base(options)
         {
         }
+        //pipeline, getting all models
+        //DbSets > gets list of models
+        //ie) Categories returns a list of all category objects in db
+        public DbSet<Category> Categories { get; set; }
     }
 }
