@@ -20,7 +20,7 @@ namespace BulkyBook.DataAccess.Repository.IRepository
             string includeProperties = null
             );
 
-        IEnumerable<T> GetFirstOrDefault(
+        T GetFirstOrDefault(
          Expression<Func<T, bool>> filter = null,
          string includeProperties = null
          );
