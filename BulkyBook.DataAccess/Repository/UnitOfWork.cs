@@ -11,7 +11,7 @@ namespace BulkyBook.DataAccess.Repository
         private readonly ApplicationDbContext _db;
         public UnitOfWork(ApplicationDbContext db)
         {
-            db = _db;
+            _db = db;
             Category = new CategoryRepository(_db);
             SP_Call = new SP_Class(_db);
         }

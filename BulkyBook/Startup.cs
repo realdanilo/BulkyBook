@@ -37,7 +37,7 @@ namespace BulkyBook
 
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-           //add unit of work to startup , pipeline
+            //add unit of work to startup , pipeline
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews();
         }

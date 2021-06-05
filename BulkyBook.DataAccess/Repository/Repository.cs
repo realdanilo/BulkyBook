@@ -21,17 +21,17 @@ namespace BulkyBook.DataAccess.Repository
             _db = db;
             this.dbSet = _db.Set<T>();
         }
-        void IRepository<T>.Add(T entity)
+        public void  Add(T entity)
         {
             dbSet.Add(entity);
         }
 
-        T IRepository<T>.Get(int id)
+        public T Get(int id)
         {
             return dbSet.Find(id);
         }
 
-        IEnumerable<T> IRepository<T>.GetAll(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy, string includeProperties)
+       public  IEnumerable<T> GetAll(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy, string includeProperties)
         {
             IQueryable<T> query = dbSet;
             if(filter != null)
@@ -57,7 +57,7 @@ namespace BulkyBook.DataAccess.Repository
             return query.ToList();
         }
 
-        T IRepository<T>.GetFirstOrDefault(Expression<Func<T, bool>> filter, string includeProperties)
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string includeProperties)
         {
 
             IQueryable<T> query = dbSet;
