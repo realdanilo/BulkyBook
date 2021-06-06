@@ -11,6 +11,6 @@ namespace BulkyBook.DataAccess.Repository.IRepository
 
         ISP_Call Sp_Call { get; }
 
-
+        void Save();
     }
 }

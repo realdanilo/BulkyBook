@@ -43,8 +43,33 @@ namespace BulkyBook.Areas.Admin.Controllers
 
             
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert(Category category) 
+        {
+            //checks new data if meets requirements with model class
+            if (ModelState.IsValid)
+            {
+                if(category.Id == 0)
+                {
+                    _unitOfWork.Category.Add(category);
+                   
+                }
+                else
+                {
+                    _unitOfWork.Category.Update(category);
+                }
+                //needs to save changes
+                _unitOfWork.Save();
+                //redirects to index action
+                //nameof(index) >> "Index"
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
+        } 
 
         //JSON APIs
+        //need to state #region and #endregion
         #region API CALLS 
         [HttpGet]
         public IActionResult GetAll()
