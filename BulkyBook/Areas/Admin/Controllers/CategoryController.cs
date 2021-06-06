@@ -1,4 +1,5 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
+using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,26 @@ namespace BulkyBook.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult Upsert(int? id)
+        {
+            Category category = new Category();
+            //if id is null, then make view to create a category
+            if(id == null)
+            {
+                return View(category);
+            }
+            //else, make view to edit category
+            
+            category = _unitOfWork.Category.Get(id.GetValueOrDefault());
+            if(category == null)
+            {
+                //id was not found
+                return NotFound();
+            }
+            return View(category);
+
+            
+        }
 
         //JSON APIs
         #region API CALLS 

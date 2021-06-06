@@ -1,0 +1,10 @@
+﻿@*if we are going to edit, we need entity, in this case id for edit *@
+@model int;
+<div class="row">
+	<div class="col-6">
+		<button type="submit" class="btn btn-primary form-control" asp-route-id="@Model">Update</button>
+	</div>
+	<div class="col-6">
+		<a asp-action="Index" class="btn btn-success form-control">Back to List</a>
+	</div>
+</div>
