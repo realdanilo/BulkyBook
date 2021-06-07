@@ -9,6 +9,9 @@ namespace BulkyBook.DataAccess.Repository.IRepository
     {
         ICategoryRepository Category { get; }
 
+        ICoverTypeRepository CoverType{ get; }
+
+
         ISP_Call Sp_Call { get; }
 
         void Save();

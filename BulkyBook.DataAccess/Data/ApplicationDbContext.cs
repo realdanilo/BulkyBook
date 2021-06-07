@@ -17,5 +17,7 @@ namespace BulkyBook.DatAccess.Data
         //DbSets > gets list of models
         //ie) Categories returns a list of all category objects in db
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CoverType> CoverTypes{ get; set; }
+
     }
 }
