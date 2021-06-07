@@ -29,10 +29,11 @@ namespace BulkyBook.DataAccess.Repository
         //to Update
         public void Execute(string procedureName, DynamicParameters param = null)
         {
-            using SqlConnection sqlCon = new SqlConnection(ConnectionString);
-            sqlCon.Open();
-            sqlCon.Execute(procedureName, param, commandType: System.Data.CommandType.StoredProcedure);
-
+            using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+            {
+                sqlCon.Open();
+                sqlCon.Execute(procedureName, param, commandType: System.Data.CommandType.StoredProcedure);
+            }
         }
 
 

@@ -1,5 +1,7 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
+using BulkyBook.Utility;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -32,8 +34,11 @@ namespace BulkyBook.Areas.Admin.Controllers
                 return View(coverType);
             }
             //else, make view to edit category
-            
-            coverType = _unitOfWork.CoverType.Get(id.GetValueOrDefault());
+
+            //coverType = _unitOfWork.CoverType.Get(id.GetValueOrDefault());
+            var parameter = new DynamicParameters();
+            parameter.Add("@Id", id);
+             coverType = _unitOfWork.SP_Call.OneRecord<CoverType>(SD.Proc_CoverType_Get, parameter);
             if(coverType == null)
             {
                 //id was not found
@@ -50,14 +55,19 @@ namespace BulkyBook.Areas.Admin.Controllers
             //checks new data if meets requirements with model class
             if (ModelState.IsValid)
             {
+                var parameter = new DynamicParameters();
+                //as client validation, there always be a name input
+                parameter.Add("@Name", coverType.Name);
                 if(coverType.Id == 0)
                 {
-                    _unitOfWork.CoverType.Add(coverType);
+                    _unitOfWork.SP_Call.Execute(SD.Proc_CoverType_Create, parameter);
                    
                 }
                 else
                 {
-                    _unitOfWork.CoverType.Update(coverType);
+                    parameter.Add("@Id", coverType.Id);
+                    _unitOfWork.SP_Call.Execute(SD.Proc_CoverType_Update, parameter);
+
                 }
                 //needs to save changes
                 _unitOfWork.Save();
@@ -70,22 +80,36 @@ namespace BulkyBook.Areas.Admin.Controllers
 
         //JSON APIs
         //need to state #region and #endregion
-        
+        //
+        //****
+        //USING STORE PROCEDURES *****
+        //****
+        //
+
         #region API CALLS 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var allObj = _unitOfWork.CoverType.GetAll();
+            var allObj = _unitOfWork.SP_Call.List<CoverType>(SD.Proc_CoverType_GetAll,null); ;
             return Json(new { data = allObj });
         }
 
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            var coverTypeFromDb = _unitOfWork.CoverType.Get(id);
+            //SD.Proc_CoverType... is a static name to keep clean code, can be replaced with string
+            
+            //get one category based on id
+            var parameter = new DynamicParameters();
+            //defines whats in store procedure statement
+            parameter.Add("@Id", id);
+            //first get the cover from db 
+            var coverTypeFromDb = _unitOfWork.SP_Call.OneRecord<CoverType>(SD.Proc_CoverType_Get,parameter);
+
             if (coverTypeFromDb == null) return Json(new { success = false, message = "Error" });
 
-            _unitOfWork.CoverType.Remove(coverTypeFromDb);
+            //No remove method, execute a statement instead
+            _unitOfWork.SP_Call.Execute(SD.Proc_CoverType_Delete, parameter);
             _unitOfWork.Save();
             return Json(new { success = true, message = "Category was deleted" });
         }

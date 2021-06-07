@@ -24,7 +24,6 @@ namespace BulkyBook.DataAccess.Repository
 
         public ISP_Call SP_Call{ get; private set; }
 
-        public ISP_Call Sp_Call => throw new NotImplementedException();
 
         public void Dispose()
         {
