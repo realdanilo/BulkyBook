@@ -1,0 +1,139 @@
+﻿@model BulkyBook.Models.ViewModels.ProductViewModel;
+@{
+    ViewData["Title"] = "Upsert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var title = "Create Product";
+}
+
+
+@*enctype >> so it can handle multiple file uploads*@
+<form method="post" enctype="multipart/form-data">
+	<div class="row p-3 border">
+		<span asp-validation-summary="ModelOnly" class="text-danger"></span>
+
+		@if (Model.Product.Id != 0)
+		{
+			title = "Edit Product";
+			<input asp-for="Product.Id" type="hidden"/>
+		}
+
+		<div class="col-12 border-bottom">
+			<h2 class="text-primary">@title</h2>
+		</div>
+		<div class="col-8 pt-4">
+			<div class="form-group row">
+				<div class="col-4">
+					@*Displays data anotation from model*@
+					<label asp-for="Product.Title"></label>
+				</div>
+				<div class="col-8">
+					<input asp-for="Product.Title" class="form-control" />
+					@*Gets validation from model*@
+					<span asp-validation-for="Product.Title" class="text-danger"></span>
+				</div>
+				<div class="col-4">
+					<label asp-for="Product.ISBN"></label>
+				</div>
+				<div class="col-8">
+					<input asp-for="Product.ISBN" class="form-control" />
+					<span asp-validation-for="Product.ISBN" class="text-danger"></span>
+				</div>
+				<div class="col-4">
+					<label asp-for="Product.Author"></label>
+				</div>
+				<div class="col-8">
+					<input asp-for="Product.Author" class="form-control" />
+					<span asp-validation-for="Product.Author" class="text-danger"></span>
+				</div>
+				<div class="col-4">
+					<label asp-for="Product.Description"></label>
+				</div>
+				<div class="col-8">
+					<textarea asp-for="Product.Description" class="form-control"></textarea>
+				</div>
+
+				<div class="col-4">
+					<label asp-for="Product.ListPrice"></label>
+				</div>
+				<div class="col-8">
+					<input asp-for="Product.ListPrice" class="form-control" />
+					<span asp-validation-for="Product.ListPrice" class="text-danger"></span>
+				</div>
+
+				<div class="col-4">
+					<label asp-for="Product.Price50"></label>
+				</div>
+				<div class="col-8">
+					<input asp-for="Product.Price50" class="form-control" />
+					<span asp-validation-for="Product.Price50" class="text-danger"></span>
+				</div>
+
+				<div class="col-4">
+					<label asp-for="Product.Price100"></label>
+				</div>
+				<div class="col-8">
+					<input asp-for="Product.Price100" class="form-control" />
+					<span asp-validation-for="Product.Price100" class="text-danger"></span>
+				</div>
+
+				<div class="col-4">
+					<label>Category</label>
+
+				</div>
+				<div class="col-8">
+					@Html.DropDownListFor(m => m.Product.Category.Id, Model.CategoryList, "Select a category", new { @class = "form-control" });
+					<span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+
+				</div>
+
+				<div class="col-4">
+					<label>Cover Type</label>
+
+				</div>
+				<div class="col-8">
+					@Html.DropDownListFor(m => m.Product.CoverTypeId, Model.CoverTypeList, "Select a cover type", new { @class = "form-control" });
+					<span asp-validation-for="Product.CoverTypeId" class="text-danger"></span>
+
+				</div>
+
+				<div class="col-4">
+					<label>Image</label>
+
+				</div>
+				<div class="col-8">
+					<input type="file" name="files" id="uploadFile" multiple class="form-control" />
+
+				</div>
+
+
+				<div class="form-group row">
+					<div class="col-12 offset-4">
+						@if (Model.Product.Id != 0)
+						{
+							@*For Edit partial view, we need to pass a model, to get id*@
+							<partial name="_EditAndBackToListButton" model="Model.Product.Id" />
+						}
+						else
+						{
+							<div class="row">
+								<div class="col-6">
+									<button type="submit" onclick="return validateInput()" class="btn btn-primary form-control">Create</button>
+								</div>
+								<div class="col-6">
+									<a asp-action="Index" class="btn btn-success form-control">Back to List</a>
+								</div>
+							</div>
+
+						}
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</form>
+@*client side validation*@
+@section Scripts{
+		 <partial name="_ValidationScriptsPartial"/>
+		 }
