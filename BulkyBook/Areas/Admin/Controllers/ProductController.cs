@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -69,30 +70,82 @@ namespace BulkyBook.Areas.Admin.Controllers
 
             
         }
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Upsert(Product product) 
-        //{
-        //    //checks new data if meets requirements with model class
-        //    if (ModelState.IsValid)
-        //    {
-        //        if(product.Id == 0)
-        //        {
-        //            _unitOfWork.Product.Add(product);
-                   
-        //        }
-        //        else
-        //        {
-        //            _unitOfWork.Product.Update(product);
-        //        }
-        //        //needs to save changes
-        //        _unitOfWork.Save();
-        //        //redirects to index action
-        //        //nameof(index) >> "Index"
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(product);
-        //} 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert(ProductViewModel productVM)
+        {
+            //checks new data if meets requirements with model class
+            if (ModelState.IsValid)
+            {
+                //get root path
+                string webRootPath = _hostEnvironment.WebRootPath;
+                // Get files that are uploaded
+                var files = HttpContext.Request.Form.Files;
+
+                if(files.Count > 0)
+                {
+                    //global unique id
+                    string fileName = Guid.NewGuid().ToString();
+
+                    //get path to images>products
+                    var uploads = Path.Combine(webRootPath, @"images\products");
+
+                    //file extension, ie jpg
+                    var extension = Path.GetExtension(files[0].FileName);
+
+                    if(productVM.Product.ImageUrl != null)
+                    {
+                        //if there is a url, update...
+                        //edit, need to remove old image first
+                        var imagePath = Path.Combine(webRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
+                    //uploading img
+                    using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                    {
+                        //copy first file to files folder(stream)
+                        files[0].CopyTo(fileStreams);
+                    }
+                    //update string of product.imageURL to the new one
+                    productVM.Product.ImageUrl = @"\images\products"+fileName+extension;
+
+                }
+                //update, but no new image was selected, empty string in productVm.Product.imgurl
+                else
+                {
+                    //update, NOT CREATE, new product url
+                    if(productVM.Product.Id != 0 )
+                    {
+                        Product productFromDb = _unitOfWork.Product.Get(productVM.Product.Id);
+                        //since productVm.Product.ImageUrl will be empty, just assing the old url
+                        productVM.Product.ImageUrl = productFromDb.ImageUrl;
+
+                    }
+                }
+
+
+                //create
+                if (productVM.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(productVM.Product);
+
+                }
+                //update
+                else
+                {
+                    _unitOfWork.Product.Update(productVM.Product);
+                }
+                //needs to save changes
+                _unitOfWork.Save();
+                //redirects to index action
+                //nameof(index) >> "Index"
+                return RedirectToAction(nameof(Index));
+            }
+            return View(productVM);
+        }
 
         //JSON APIs
         //need to state #region and #endregion

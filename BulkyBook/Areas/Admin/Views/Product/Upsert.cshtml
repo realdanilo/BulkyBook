@@ -81,7 +81,7 @@
 
 				</div>
 				<div class="col-8">
-					@Html.DropDownListFor(m => m.Product.Category.Id, Model.CategoryList, "Select a category", new { @class = "form-control" });
+					@Html.DropDownListFor(m => m.Product.Category.Id, Model.CategoryList, "Select a category", new { @class = "form-control" })
 					<span asp-validation-for="Product.CategoryId" class="text-danger"></span>
 
 				</div>
@@ -91,7 +91,7 @@
 
 				</div>
 				<div class="col-8">
-					@Html.DropDownListFor(m => m.Product.CoverTypeId, Model.CoverTypeList, "Select a cover type", new { @class = "form-control" });
+					@Html.DropDownListFor(m => m.Product.CoverTypeId, Model.CoverTypeList, "Select a cover type", new { @class = "form-control" })
 					<span asp-validation-for="Product.CoverTypeId" class="text-danger"></span>
 
 				</div>
@@ -136,4 +136,21 @@
 @*client side validation*@
 @section Scripts{
 		 <partial name="_ValidationScriptsPartial"/>
+		 <script src="https://cdn.tiny.cloud/1/z3a74yqmb5vphsul5m1g5e96du79tnsi287zt5wm0z5h92q5/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+	tinymce.init({
+		selector: "textarea",
+		plugins: "list",
+		menubar:"file edit format"
+	})
+
+	let uploadFile = document.getElementById("uploadFile").value
+	function validateInput() {
+		if (uploadFile == "") {
+			swal("Error", "please select an image", "error")
+			return fase;
+		}
+		return true;
+	}
+</script>
 		 }
