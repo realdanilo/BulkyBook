@@ -82,7 +82,7 @@ namespace BulkyBook.Areas.Admin.Controllers
                 // Get files that are uploaded
                 var files = HttpContext.Request.Form.Files;
 
-                if(files.Count > 0)
+                if (files.Count > 0)
                 {
                     //global unique id
                     string fileName = Guid.NewGuid().ToString();
@@ -93,7 +93,7 @@ namespace BulkyBook.Areas.Admin.Controllers
                     //file extension, ie jpg
                     var extension = Path.GetExtension(files[0].FileName);
 
-                    if(productVM.Product.ImageUrl != null)
+                    if (productVM.Product.ImageUrl != null)
                     {
                         //if there is a url, update...
                         //edit, need to remove old image first
@@ -110,14 +110,14 @@ namespace BulkyBook.Areas.Admin.Controllers
                         files[0].CopyTo(fileStreams);
                     }
                     //update string of product.imageURL to the new one
-                    productVM.Product.ImageUrl = @"\images\products\"+fileName+extension;
+                    productVM.Product.ImageUrl = @"\images\products\" + fileName + extension;
 
                 }
                 //update, but no new image was selected, empty string in productVm.Product.imgurl
                 else
                 {
                     //update, NOT CREATE, new product url
-                    if(productVM.Product.Id != 0 )
+                    if (productVM.Product.Id != 0)
                     {
                         Product productFromDb = _unitOfWork.Product.Get(productVM.Product.Id);
                         //since productVm.Product.ImageUrl will be empty, just assing the old url
@@ -144,6 +144,28 @@ namespace BulkyBook.Areas.Admin.Controllers
                 //nameof(index) >> "Index"
                 return RedirectToAction(nameof(Index));
             }
+
+            //IEnumerable<SelectedList> ERROR because it was passed back but most of product properties are null, and selected dropdowns are also null
+            //AKA >> View error because everything is empty
+            else {
+                //reload productVM.CategoryList
+                productVM.CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                });
+
+                productVM.CoverTypeList = _unitOfWork.CoverType.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                });
+                //if is editing with error, get product info back as "repopulate", so product properties are not null/blank
+                if (productVM.Product.Id != 0)
+                {
+                    productVM.Product = _unitOfWork.Product.Get(productVM.Product.Id);
+                }
+            }
             return View(productVM);
         }
 
@@ -163,7 +185,15 @@ namespace BulkyBook.Areas.Admin.Controllers
         {
             var productFromDb = _unitOfWork.Product.Get(id);
             if (productFromDb == null) return Json(new { success = false, message = "Error" });
+            //remove image first 
+            string webRootPath = _hostEnvironment.WebRootPath;
+            var imagePath = Path.Combine(webRootPath, productFromDb.ImageUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
 
+            //remove product
             _unitOfWork.Product.Remove(productFromDb);
             _unitOfWork.Save();
             return Json(new {success=true, message="Product was deleted" });
