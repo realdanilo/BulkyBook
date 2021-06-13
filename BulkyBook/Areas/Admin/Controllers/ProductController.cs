@@ -110,7 +110,7 @@ namespace BulkyBook.Areas.Admin.Controllers
                         files[0].CopyTo(fileStreams);
                     }
                     //update string of product.imageURL to the new one
-                    productVM.Product.ImageUrl = @"\images\products"+fileName+extension;
+                    productVM.Product.ImageUrl = @"\images\products\"+fileName+extension;
 
                 }
                 //update, but no new image was selected, empty string in productVm.Product.imgurl

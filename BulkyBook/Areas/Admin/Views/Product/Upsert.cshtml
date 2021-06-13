@@ -95,6 +95,7 @@
 					Category
 				</div>
 				<div class="col-8">
+					@*dropdownList( Where it should be STORED, where is POPULATED from*@
 					@Html.DropDownListFor(m => m.Product.CategoryId, Model.CategoryList, "-Select a Category",
 				   new { @class = "form-control" })
 					<span asp-validation-for="Product.CategoryId" class="text-danger"></span>
@@ -141,7 +142,7 @@
 		@if (Model.Product.Id != 0)
 		{
 			<div class="col-3 offset-1 pt-4">
-				<img src="@Model.Product.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+				<img src="@Model.Product.ImageUrl"  style="border-radius:5px; border:1px solid #bbb9b9; width:100%" />
 			</div>
 		}
 	</div>
