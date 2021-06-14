@@ -14,13 +14,14 @@ function loadDataTable() {
 			{ "data": "streetAddress", "width": "15%" },
 			{ "data": "city", "width": "10%" },
 			{ "data": "state", "width": "10%" },
+			{ "data": "postalCode", "width": "10%" },
 			{ "data": "phoneNumber", "width": "15%" },
 			{
 				"data": "isAuthorizedCompany", "render": function (data) {
 					if (data) {
-						return `<input type="checkbox" disable checked/>`
+						return `<input type="checkbox" disabled checked/>`
 					} else {
-						return `<input type="checkbox" disable />`
+						return `<input type="checkbox" disabled />`
 
 					}
 				}
