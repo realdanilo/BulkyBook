@@ -170,16 +170,46 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                         await _roleManager.CreateAsync(new IdentityRole(SD.Role_User_Indi));
                     }
                     //for testing, add current user as admin
-                    await _userManager.AddToRoleAsync(user, SD.Role_Admin);
+                    //await _userManager.AddToRoleAsync(user, SD.Role_Admin);
+
+                    //ROLES
+                    if (user.Role==null)
+                    {
+                        //individual user
+                       await _userManager.AddToRoleAsync(user, SD.Role_User_Indi);
+                    }
+                    else
+                    {
+                       //assing user as copmany
+                       if(user.CompanyId > 0)
+                        {
+                            await _userManager.AddToRoleAsync(user, SD.Role_User_Comp);
+                        }
+                        //assing to selected role
+                        await _userManager.AddToRoleAsync(user, user.Role);
+
+                    }
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
                     else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                    {   //individual user
+                        if(user.Role == null)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
+                        else
+                        {
+                            //admin is registering a new user
+                            //dont sing admin out, redirect to list of all users
+                            //method,controller, area
+                            return RedirectToAction("Index", "User", new { Area = "Admin" });
+
+
+                        }
                     }
                 }
                 foreach (var error in result.Errors)
