@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
@@ -81,11 +82,34 @@ namespace BulkyBook.Areas.Identity.Pages.Account
             public string PhoneNumber { get; set; }
             public int? CompanyId { get; set; }
             public string Role { get; set; }
+            
+            //dropdowns for company and role selection
+            //selectlistitem > include net core mvc rendering
+            public IEnumerable<SelectListItem>  CompanyList { get; set; }
+            public IEnumerable<SelectListItem>  RoleList { get; set; }
+
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+            //populate dropdowns
+            //will be available to view auto
+            Input = new InputModel()
+            {
+                CompanyList = _unitOfWork.Company.GetAll().Select(n => new SelectListItem {
+                    Text = n.Name,
+                    Value = n.Id.ToString()
+                }),
+                //dont display individual user role, bc admin is only doing copmany/employee/admin.
+                //generate "name of the (user) role", not id
+                RoleList = _roleManager.Roles.Where(u => u.Name != SD.Role_User_Indi).Select(x =>x.Name).Select(n => new SelectListItem
+                {
+                    Text = n,
+                    Value = n
+                })
+
+            };
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
