@@ -15,17 +15,33 @@ function loadDataTable() {
 			{ "data": "phoneNumber", "width": "15%" },
 			{ "data": "company.name", "width": "15%" },
 			{ "data": "role", "width": "15%" },
-			//{
-			//	"data": "id", "render": function (data) {
-			//		return `
-			//				<div class="text-center">
-			//					<a href="/Admin/Category/Upsert/${data}" class="btn btn-success text-white">Edit</a>
-			//					<a onclick=deleteCategory("/Admin/Category/Delete/${data}") class="btn btn-danger text-white">Delete</a>
+			{
+				"data": {
+					id: "id",
+					lockoutEnd:"lockoutEnd"
+				}, "render": function (data) {
+					var today = new Date().getTime();
+					var lockout = new Date(data.lockoutEnd).getTime()
+					if (lockout > today) {
+						//use is locked
+						//add code to unlock user
+						return `
+							<div class="text-center">
+								<a onclick=LockUnlock(${data.id}) class="btn btn-danger text-white"><i class="fas fa-lock-open"></i>Unlock</a>
 								
-			//				</div>
-			//				`}, 
-			//	"width":"40%"
-			//}
+							</div>
+							`
+					} else {
+						return `
+							<div class="text-center">
+								<a onclick=LockUnlock(${data.id}) class="btn btn-success text-white"><i class="fas fa-lock"></i>Lock</a>
+								
+							</div>
+							`
+					}
+				}, 
+				"width":"25%"
+			}
 		]
 	})
 }
