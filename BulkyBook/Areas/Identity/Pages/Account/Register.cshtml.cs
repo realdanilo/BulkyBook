@@ -130,7 +130,7 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                     PostalCode = Input.PostalCode,
                     Name = Input.Name,
                     PhoneNumber = Input.PhoneNumber,
-                    Role = Input.PhoneNumber
+                    Role = Input.Role
                 };
 
                 //Create user 
