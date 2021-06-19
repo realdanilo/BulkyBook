@@ -27,14 +27,14 @@ function loadDataTable() {
 						//add code to unlock user
 						return `
 							<div class="text-center">
-								<a onclick=LockUnlock(${data.id}) class="btn btn-danger text-white"><i class="fas fa-lock-open"></i>Unlock</a>
+								<a onclick=LockUnlock("${data.id}") class="btn btn-danger text-white"><i class="fas fa-lock-open"></i>Unlock</a>
 								
 							</div>
 							`
 					} else {
 						return `
 							<div class="text-center">
-								<a onclick=LockUnlock(${data.id}) class="btn btn-success text-white"><i class="fas fa-lock"></i>Lock</a>
+								<a onclick=LockUnlock("${data.id}") class="btn btn-success text-white"><i class="fas fa-lock"></i>Lock</a>
 								
 							</div>
 							`
@@ -46,10 +46,9 @@ function loadDataTable() {
 	})
 }
 
-function deleteCategory(url) {
+function LockUnlock(id) {
 	swal({
-		title: "Are you sure you want to delete",
-		text: "you wont be able to restore the data",
+		title: "Are you sure you want to lock",
 		icon: "warning",
 		buttons: true,
 		dangerMode:true 
@@ -57,8 +56,10 @@ function deleteCategory(url) {
 		//if resp is true to delete
 		if (res) {
 			$.ajax({
-				type: "delete",
-				url,
+				type: "post",
+				url: `/Admin/User/LockUnlock`,
+				data: JSON.stringify(id),
+				contentType:"application/json",
 				success: function ({ success, message }) {
 					if (success) {
 						toastr.success(message)
