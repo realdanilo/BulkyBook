@@ -57,11 +57,17 @@ namespace BulkyBook
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
             });
 
-            //add facebook or google registering 
+            //add facebook registration
             services.AddAuthentication().AddFacebook(options =>
             {
                 options.AppId = "";
                 options.AppSecret = "";
+            });
+            //add google registration
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = "";
+                options.ClientSecret = "";
             });
         }
 
