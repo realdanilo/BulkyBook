@@ -44,6 +44,7 @@ namespace BulkyBook
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             //add email service (for registration page)
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
             //add unit of work to startup , pipeline
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews();
