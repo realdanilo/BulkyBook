@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,9 @@ namespace BulkyBook.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
+            //session will clear, # of items in cart
+            HttpContext.Session.SetObject(SD.ssShoppingCart, 0);
+
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)
