@@ -99,5 +99,62 @@ namespace BulkyBook.Areas.Customer.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult Plus(int cartId)
+        {
+            var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault(u => u.Id == cartId, includeProperties: "Product");
+
+            cart.Count += 1;
+            cart.Price = SD.GetPriceBasedOnQty(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+            _unitOfWork.Save();
+            
+            return RedirectToAction(nameof(Index));
+        }
+        public IActionResult Minus(int cartId)
+        {
+            var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault(u => u.Id == cartId, includeProperties: "Product");
+
+            //if is 0, remove from shoppingCart and session #
+            if(cart.Count == 1)
+            {
+                //get count first before we delete
+                var count = _unitOfWork.ShoppingCart.GetAll(u => u.AplicationUserId == cart.AplicationUserId).ToList().Count();
+                //remove
+                _unitOfWork.ShoppingCart.Remove(cart);
+                _unitOfWork.Save();
+                //update session
+                HttpContext.Session.SetObject(SD.ssShoppingCart, 0);
+            }
+            else
+            {
+
+                cart.Count -= 1;
+            
+                cart.Price = SD.GetPriceBasedOnQty(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+                _unitOfWork.Save();
+            
+            }
+
+
+            return RedirectToAction(nameof(Index));
+        }
+        
+        public IActionResult Remove(int cartId)
+        {
+            var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault(u => u.Id == cartId, includeProperties: "Product");
+
+            
+                //get count first before we delete
+                var count = _unitOfWork.ShoppingCart.GetAll(u => u.AplicationUserId == cart.AplicationUserId).ToList().Count();
+                //remove
+                _unitOfWork.ShoppingCart.Remove(cart);
+                _unitOfWork.Save();
+                //update session
+                HttpContext.Session.SetObject(SD.ssShoppingCart, 0);
+           
+
+
+            return RedirectToAction(nameof(Index));
+        }
+        
     }
 }
