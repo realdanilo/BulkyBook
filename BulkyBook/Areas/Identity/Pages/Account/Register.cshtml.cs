@@ -219,6 +219,22 @@ namespace BulkyBook.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
+            //reload dropdown data
+
+            Input = new InputModel()
+            {
+                CompanyList = _unitOfWork.Company.GetAll().Select(n => new SelectListItem
+                {
+                    Text = n.Name,
+                    Value = n.Id.ToString()
+                }),
+                RoleList = _roleManager.Roles.Where(u => u.Name != SD.Role_User_Indi).Select(x => x.Name).Select(n => new SelectListItem
+                {
+                    Text = n,
+                    Value = n
+                })
+
+            };
             return Page();
         }
     }
