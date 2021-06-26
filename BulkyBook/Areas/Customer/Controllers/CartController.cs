@@ -5,10 +5,13 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace BulkyBook.Areas.Customer.Controllers
@@ -59,5 +62,42 @@ namespace BulkyBook.Areas.Customer.Controllers
             }
             return View(shoppingCartVM);
         }
+
+        //post for index, but using annotations
+        //do this bc action names are the same and gives error
+        [HttpPost]
+        [ActionName("Index")]
+        public async Task<IActionResult> IndexPost()
+        {
+            //get user id of loggedin user
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            //get user obj
+            var user = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == claim.Value);
+            if(user == null)
+            {
+                //adding error
+                ModelState.AddModelError(string.Empty, "Error finding the correct user");
+
+            }
+
+            //Email Verification**
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity", userId = user.Id, code = code, returnUrl = string.Empty },
+                protocol: Request.Scheme);
+
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+              
+            ModelState.AddModelError(string.Empty, "Verification email sent, check your email");
+
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
