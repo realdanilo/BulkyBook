@@ -1,5 +1,7 @@
 ﻿@model BulkyBook.Models.ViewModels.ShoppingCartViewModel;
-
+@using Microsoft.Extensions.Options
+@*to access keys we have in class*@
+@inject IOptions<BulkyBook.Utility.StripeSettings> Stripe
 @{
 	ViewData["Title"] = "Summary";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -108,7 +110,15 @@
 							<p style="color:maroon; font-size:14px;">Estimate Arrival Date: @DateTime.Now.AddDays(7).ToShortDateString() - @DateTime.Now.AddDays(14).ToShortDateString()</p>
 						</div>
 						<div class="col-12 col-md-4">
-
+							@{
+								var orderTotalForStripe = Model.OrderHeader.OrderTotal * 100;
+							}
+							@*will generate a button,, it will bubble up and run when a submit button is click, thats why we hide it *@
+							@*sends token to controller*@
+							<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-key="@Stripe.Value.publishableKey" data-amount="@orderTotalForStripe" data-name="BulkyBook" data-label="Place Order" data-description="get your stuff for less" data-local="auto" data-remember-me="false"></script>
+							<script>
+								document.getElementsByClassName("stripe-button-el")[0].style.display = "none";
+							</script>
 							<button type="submit" value="Place Order" class="btn btn-success form-control">Place Order</button>
 						</div>
 					</div>

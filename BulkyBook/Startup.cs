@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,8 @@ namespace BulkyBook
             //add email service (for registration page)
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOptions>(Configuration);
+            //add stripe, payment settings
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             //add unit of work to startup , pipeline
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews();
@@ -96,6 +99,8 @@ namespace BulkyBook
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            //adding stripe middleware
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["secretKey"];
 
             app.UseRouting();
             app.UseSession();
