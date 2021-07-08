@@ -233,7 +233,12 @@ namespace BulkyBook.Areas.Customer.Controllers
             //check tokens
             if(stripeToken ==null)
             {
-
+                //only null if company pays, give them x days to pay => no stripe => to token
+                //authorized user placing order
+                //create order
+                shoppingCartVM.OrderHeader.PaymentDueDate = DateTime.Now.AddDays(30);
+                shoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+                shoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
             }
             else
             {
