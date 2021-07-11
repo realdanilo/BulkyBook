@@ -1,18 +1,15 @@
-﻿var dataTable;
+﻿var selectedDT;
 var url;
 $(document).ready(() => {
-	loadDataTable();
 	url = window.location.search;
 	if (url.includes("inprocess")) { loadDataTable("GetOrderList?status=inprocess") }
 	else if (url.includes("pending")) { loadDataTable("GetOrderList?status=pending") }
 	else if (url.includes("completed")) { loadDataTable("GetOrderList?status=completed") }
 	else if (url.includes("rejected")) { loadDataTable("GetOrderList?status=rejected") }
-	else loadDataTable("GetOrderList?status=rejected") 
-
+	else loadDataTable("GetOrderList?status=all") 
 })
-
 function loadDataTable(urlGoTo) {
-	dataTable = $("#tblData").DataTable({
+	selectedDT = $("#tblData1").DataTable({
 		"ajax": {
 			"url": "/Admin/Order/"+urlGoTo
 		},
