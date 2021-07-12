@@ -1,6 +1,8 @@
 ﻿@model BulkyBook.Models.ViewModels.OrderDetailsViewModel
 @using BulkyBook.Utility
-
+@using Microsoft.Extensions.Options
+@*to access keys we have in class*@
+@inject IOptions<BulkyBook.Utility.StripeSettings> Stripe
 
 <form method="post">
 	<input type="hidden" asp-for="OrderHeader.Id" />
@@ -239,6 +241,20 @@
 							{
 								<label class="btn btn-primary form-control">@Model.OrderHeader.OrderStatus</label>
 							}
+							@*company paymeny*@
+							@{
+								var orderTotalStripe = Model.OrderHeader.OrderTotal * 100;
+
+							}
+							@if (Model.OrderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment && Model.OrderHeader.OrderStatus == SD.StatusShipped)
+							{
+								<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-key="@Stripe.Value.publishableKey" data-amount="@orderTotalStripe" data-name="BulkyBook" data-label="Place Order" data-description="get your stuff for less" data-local="auto" data-remember-me="false"></script>
+								<script>
+									document.getElementsByClassName("stripe-button-el")[0].style.display = "none";
+								</script>
+								<button type="submit" value="Place Order" class="btn btn-success form-control">Pay Now</button>
+							}
+
 							@if (Model.OrderHeader.OrderStatus != SD.StatusRefunded && Model.OrderHeader.OrderStatus != SD.StatusCancelled && (User.IsInRole(SD.Role_Employee) || User.IsInRole(SD.Role_Admin)))
 							{
 								<br />
@@ -255,9 +271,9 @@
 	</div>
 </form>
 @section Scripts{
-<script>
+	<script>
 
-		function validateInput(){
+		function validateInput() {
 			var tracking = document.getElementById("trackingNumber").value;
 			var carrier = document.getElementById("carrier").value;
 			if (tracking.toString() == "") {
@@ -268,8 +284,8 @@
 				return false
 			}
 			return true
-	}
+		}
 
 
-</script>
+	</script>
 }

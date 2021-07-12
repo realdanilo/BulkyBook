@@ -92,6 +92,49 @@ namespace BulkyBook.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Details")]
+        public IActionResult Details(string token)
+        {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == orderDetailsVM.OrderHeader.Id, includeProperties:"ApplicationUser");
+            if(token != null)
+            {
+                //process payment
+                var options = new ChargeCreateOptions()
+                {
+                    Amount = Convert.ToInt32(orderHeader.OrderTotal * 100),
+                    Currency = "usd",
+                    Description = "Order Id " + orderHeader.Id,
+                    Source = token,
+
+                };
+                var service = new ChargeService();
+                //creates transaction to credit card
+                Charge charge = service.Create(options);
+                if (charge.Id == null)
+                {
+                    //issue with payment
+                    orderHeader.PaymentStatus = SD.PaymentStatusDelayedRejected;
+                }
+                else
+                {
+                    orderHeader.TransactionId = charge.Id;
+                }
+                if (charge.Status.ToLower() == "succeeded")
+                {
+                    //update 
+                   orderHeader.PaymentStatus = SD.PaymentStatusApproved;
+                  
+                    orderHeader.PaymentDate = DateTime.Now;
+
+                }
+                _unitOfWork.Save();
+            }
+                return RedirectToAction("Details", "Order", new { id = orderHeader.Id });
+        }
+
+
         #region API CALLS
         [HttpGet]
         public IActionResult GetOrderList(string status)
