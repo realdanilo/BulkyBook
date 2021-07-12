@@ -19,6 +19,8 @@ namespace BulkyBook.Areas.Admin.Controllers
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+
+
         [BindProperty]
         public OrderDetailsViewModel  orderDetailsVM{ get; set; }
         public OrderController(IUnitOfWork unitOfWork)
@@ -45,20 +47,20 @@ namespace BulkyBook.Areas.Admin.Controllers
         {
             OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == id);
             orderHeader.OrderStatus = SD.StatusInProcess;
-            _unitOfWork.Save()
+            _unitOfWork.Save();
             return RedirectToAction("Index");
         }
         [HttpPost]
         [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
-        public IActionResult ShipOrder(int id)
+        public IActionResult ShipOrder()
         {
-            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == id);
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == orderDetailsVM.OrderHeader.Id);
             orderHeader.TrackingNumber = orderDetailsVM.OrderHeader.TrackingNumber;
-            orderHeader.Carrier = orderDetailsVM.OrderHeader.TrackingNumber;
+            orderHeader.Carrier = orderDetailsVM.OrderHeader.Carrier;
             orderHeader.OrderStatus = SD.StatusShipped;
             orderHeader.ShippingDate = DateTime.Now;
 
-            _unitOfWork.Save()
+            _unitOfWork.Save();
             return RedirectToAction("Index");
         }
 
@@ -86,7 +88,7 @@ namespace BulkyBook.Areas.Admin.Controllers
                 orderHeader.PaymentStatus= SD.StatusCancelled;
 
             }
-            _unitOfWork.Save()
+            _unitOfWork.Save();
             return RedirectToAction("Index");
         }
 

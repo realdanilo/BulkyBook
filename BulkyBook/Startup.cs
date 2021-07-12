@@ -67,6 +67,7 @@ namespace BulkyBook
                 options.AppId = "";
                 options.AppSecret = "";
 
+
             });
             //add google registration
             services.AddAuthentication().AddGoogle(options =>
